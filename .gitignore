@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+vendor/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secretos y configuración local (NUNCA versionar)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets.json
+
+# Logs y artefactos
+*.log
+npm-debug.log*
+coverage/
+dist/
+build/
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Nota: .env.example SÍ se versiona (no coincide con la regla .env).
+# Nota: tests/evidence/ SÍ se versiona: es evidencia entregable.
