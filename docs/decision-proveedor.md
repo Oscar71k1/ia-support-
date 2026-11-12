@@ -58,8 +58,23 @@ LLM_TEMPERATURE=0
 | reintentos | `1`, solo por JSON inválido | No reintentar fallos de red en bucle |
 | modo JSON | según proveedor | Ver `prompt/system-prompt.md` |
 
+## Límites reales medidos (plan gratuito)
+
+Medido el 2026-11-12 con la key del equipo: **8 000 tokens por minuto** en los modelos de chat
+probados (`gpt-oss-120b`, `gpt-oss-20b`, `qwen3.8-27b`; `allam-2-7b` tiene 6 000) y 1 000
+peticiones por minuto. El prompt del sistema consume ~2 000 tokens por petición, así que el techo
+real es de **3 a 4 peticiones por minuto**, no 24 seguidas.
+
+Consecuencias para el equipo:
+
+- Las pruebas deben espaciarse (~20 s por caso) o el cliente debe reintentar ante `429`.
+- La API debe tratar el `429` como error recuperable: backoff y, si se agota, `503`. Nunca
+  devolver una clasificación inventada.
+- Una corrida completa de 12 casos tarda 4–5 minutos: planificar la demo con ese tiempo.
+- `max_tokens=400` provoca `400 json_validate_failed` con `gpt-oss`, porque el razonamiento
+  consume el presupuesto antes de cerrar el JSON. Usar 900.
+
 ## Coste esperado de las pruebas
 
-12 casos × 2 motores = 24 peticiones, de las cuales 12 llegan al proveedor. Con ~250 tokens de
-entrada y ~150 de salida por caso, son unos **5 000 tokens** en total: irrelevante incluso en un
-plan gratuito.
+12 peticiones al proveedor, ~2 000 tokens cada una: unos **24 000 tokens por corrida completa**.
+Sigue siendo irrelevante en coste, pero no en tiempo por el límite anterior.
