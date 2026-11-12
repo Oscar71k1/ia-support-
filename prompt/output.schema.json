@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-support-engine.local/schemas/api-response.json",
+  "title": "Contrato de respuesta POST /api/analyze",
+  "description": "Objeto final devuelto por ambos motores. El motor generativo produce solo las 4 claves de $defs.llmOutput; la API añade 'mode' y valida el conjunto.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["category", "priority", "response", "requiresHumanReview", "mode"],
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": ["ACCESS", "BUG", "FEATURE", "SECURITY"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "response": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1200
+    },
+    "requiresHumanReview": {
+      "type": "boolean"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["traditional", "generative"]
+    }
+  },
+  "$defs": {
+    "llmOutput": {
+      "title": "Salida esperada del modelo generativo",
+      "description": "Validar contra este esquema antes de fusionar con 'mode'. Si falla: 1 reintento de reparación y luego 502.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "priority", "response", "requiresHumanReview"],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": ["ACCESS", "BUG", "FEATURE", "SECURITY"]
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "response": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1200
+        },
+        "requiresHumanReview": {
+          "type": "boolean"
+        }
+      }
+    },
+    "request": {
+      "title": "Cuerpo de la petición",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message", "mode"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2000
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["traditional", "generative"]
+        }
+      }
+    }
+  }
+}
